@@ -1,6 +1,6 @@
 // --------------------------
 // TCasPanels
-// v 0.2a
+// v 0.1.3a
 // --------------------------
 
 /*
@@ -35,6 +35,7 @@ Virus SW121
 Cap10
 Beechcraft Baron G58
 Beechcraft Bonanza G36
+++++++++++++++++++++++
 */
 
 Include.addImport("/Templates/PanelInfoLine/PanelInfoLine.html");
@@ -95,8 +96,10 @@ class TCasOptionsElement extends TemplateElement {
                 }
                 // No aircraft found
                 if (!factor && json_obj.default) {
-                    if (TC_DEBUG) console.log(json_obj.default);
-                    factor = json_obj.default
+                    if (TC_DEBUG) console.log("Using default: "+ json_obj.default);
+                    factor = json_obj.default;
+                    localStorage.setItem("FPS_r_factor", factor);
+                    if (TC_DEBUG) console.log(localStorage.getItem("FPS_r_factor"));
                 }
 
             }
@@ -133,6 +136,7 @@ class TCasOptionsElement extends TemplateElement {
             }
             // Set rFactor -> BaseInstrument
             localStorage.setItem("FPS_r_factor", factor);
+            if (TC_DEBUG) console.log(localStorage.getItem("FPS_r_factor"));
             // Set quality for existing plane -> JSON
             let found = false;
             if (json_obj) {
