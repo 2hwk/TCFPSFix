@@ -1,6 +1,6 @@
 // --------------------------
 // TCasPanels
-// v 0.1.3a
+// v 1.1.3a
 // --------------------------
 
 /*
@@ -97,7 +97,7 @@ class TCasOptionsElement extends TemplateElement {
                 // No aircraft found
                 if (!factor && json_obj.default) {
                     if (TC_DEBUG) console.log("Using default: "+ json_obj.default);
-                    factor = json_obj.default;
+                    factor = quality_factor[json_obj.default];
                     localStorage.setItem("FPS_r_factor", factor);
                     if (TC_DEBUG) console.log(localStorage.getItem("FPS_r_factor"));
                 }
