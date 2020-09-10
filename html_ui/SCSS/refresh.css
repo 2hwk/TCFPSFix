@@ -1,0 +1,35 @@
+#rPanel {
+  z-index: 10000;
+  transform: rotateX(0);
+  font-family: 'Segoe UI Symbol';
+}
+
+/* Links */
+a {
+  padding: 2px 35px 2px 35px;
+  text-decoration: none;
+  color: #818181;
+  display: block;
+  transition: 0.3s;
+  background: none;
+  border: none;
+}
+
+a:hover {
+  color: #f1f1f1;
+}
+
+/* Sliding Panel */
+.refreshPanel {
+  height: 285px;
+  width: 0%; /* JS */
+  position: fixed;
+  z-index: 1; /* Top */
+  top: 0;
+  left: 0;
+  background-color: #111;
+  overflow-x: hidden; /* Disable horizontal scroll */
+  padding-top: 60px; /* Place content from the top */
+  transition: 0.2s; /* 0.2 transition */
+  font-size: 25px;
+}

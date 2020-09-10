@@ -1,0 +1,139 @@
+﻿/** This mixin makes a single line element fit exactly on the Roboto font for easier integration. */
+aircraft-selection {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  /* &.ChildActive {
+        border: var(--baseMargin) solid white; // HACK
+    }
+
+    &:not(.ChildActive) {
+        border: var(--baseMargin) solid transparent; // HACK
+    }
+       */ }
+  aircraft-selection .searchContainer {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center; }
+    aircraft-selection .searchContainer new-push-button {
+      margin-right: var(--baseMargin); }
+  aircraft-selection search-element {
+    background-color: var(--backgroundColorPanel);
+    margin-bottom: var(--halfMargin);
+    flex-shrink: 0; }
+
+aircraft-liveries {
+  display: block;
+  width: 100%;
+  height: 100%; }
+
+aircraft-panels {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: flex-start; }
+  aircraft-panels > .Content {
+    display: block;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    padding-left: var(--halfMargin); }
+  aircraft-panels options-menu {
+    width: calc(var(--unscaledScreenHeight) * (670px / 2160));
+    background-color: var(--backgroundColorPanel);
+    flex-shrink: 0; }
+  aircraft-panels search-element {
+    background-color: var(--backgroundColorPanel);
+    margin-bottom: var(--halfMargin);
+    flex-shrink: 0; }
+
+aircraft-atc {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  /*&.ChildActive {
+        border: var(--baseMargin) solid white; // HACK
+    }
+
+    &:not(.ChildActive) {
+        border: var(--baseMargin) solid transparent; // HACK
+    }*/ }
+  aircraft-atc #AircraftATCOptions_Content {
+    display: block;
+    flex: 1 0 auto;
+    position: relative;
+    padding: calc(var(--screenHeight) * (24px / 2160));
+    background-color: var(--backgroundColorPanel); }
+    aircraft-atc #AircraftATCOptions_Content > * {
+      margin-bottom: var(--halfMargin); }
+    aircraft-atc #AircraftATCOptions_Content:last-child {
+      margin-bottom: 0; }
+  aircraft-atc .TipsWrapper {
+    display: flex;
+    width: calc(var(--screenHeight) * (700px / 2160));
+    margin-left: var(--halfMargin);
+    padding: calc(var(--screenHeight) * (24px / 2160));
+    background: var(--backgroundColorPanel); }
+    aircraft-atc .TipsWrapper .Tips {
+      flex: 1 0 auto;
+      position: relative;
+      text-align: left; }
+
+  aircraft-tcas-framerate {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    /*&.ChildActive {
+          border: var(--baseMargin) solid white; // HACK
+      }
+
+      &:not(.ChildActive) {
+          border: var(--baseMargin) solid transparent; // HACK
+      }*/ }
+    aircraft-tcas-framerate #AircraftATCOptions_Content {
+      display: block;
+      flex: 1 0 auto;
+      position: relative;
+      padding: calc(var(--screenHeight) * (24px / 2160));
+      background-color: var(--backgroundColorPanel); }
+      aircraft-tcas-framerate #AircraftATCOptions_Content > * {
+        margin-bottom: var(--halfMargin); }
+      aircraft-tcas-framerate #AircraftATCOptions_Content:last-child {
+        margin-bottom: 0; }
+    aircraft-tcas-framerate .TipsWrapper {
+      display: flex;
+      width: calc(var(--screenHeight) * (700px / 2160));
+      margin-left: var(--halfMargin);
+      padding: calc(var(--screenHeight) * (24px / 2160));
+      background: var(--backgroundColorPanel); }
+      aircraft-tcas-framerate .TipsWrapper .Tips {
+        flex: 1 0 auto;
+        position: relative;
+        text-align: left; }
+
+aircraft-specs {
+  display: flex;
+  flex-direction: column;
+  background: var(--backgroundColorContrastedPanel);
+  padding: var(--halfMargin); }
+  aircraft-specs virtual-scroll {
+    background-color: var(--backgroundColorPanel);
+    padding: var(--basePadding); }
+  aircraft-specs .Description > h1, aircraft-specs .Specs > h1 {
+    padding-bottom: calc(var(--screenHeight) * (8px / 1080));
+    border-bottom: var(--minimalBorderWidth) solid var(--textColor);
+    margin-bottom: var(--baseMargin);
+    text-transform: uppercase;
+    margin-top: var(--baseMargin);
+    font-size: var(--fontSizeDefault);
+    font-weight: bold; }
+  aircraft-specs .Description > .Content, aircraft-specs .Specs > .Content {
+    font-weight: 500; }
+  aircraft-specs .Description > h1 {
+    margin-top: 0; }
+

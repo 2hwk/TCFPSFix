@@ -1,0 +1,91 @@
+﻿<link rel="stylesheet" href="./AircraftPanels.css" />
+
+
+
+<!--MINI AIRCRAFT SELECTION-->
+<script type="text/html" id="MiniAircraftSelectionTemplate" default-child-button="plane-carrousel">
+    <plane-carrousel auto-validate-plane></plane-carrousel>
+</script>
+
+<!--AIRCRAFT SELECTION-->
+<script type="text/html" id="AircraftSelectionTemplate" auto-inside>
+    <!--<search-plane></search-plane>-->
+    <div class="searchContainer">
+        <search-element id="searchAirplane" placeholder="TT:MENU.SEARCH" deletable-field></search-element>
+        <new-push-button class="small disabled hide" title="TT:MENU.GO_TO_MARKETPLACE"></new-push-button>
+    </div>
+    <simple-filter-plane></simple-filter-plane>
+    <plane-carrousel auto-validate-plane></plane-carrousel>
+</script>
+
+<!--AIRCRAFT SPECS-->
+<script type="text/html" id="AircraftSpecsTemplate">
+    <virtual-scroll direction="y" class="condensed" can-focus-by-keys>
+        <div class="Description">
+            <h1 data-l10n-id="TT:MENU.DESCRIPTION"></h1>
+            <div class="Content"></div>
+        </div>
+        <div class="Specs">
+            <h1 data-l10n-id="TT:MENU.AIRCRAFT.SPECS"></h1>
+            <div class="Content"></div>
+        </div>
+    </virtual-scroll>
+
+</script>
+
+<!--LIVERIES SELECTION-->
+<script type="text/html" id="AircraftLiveriesTemplate">
+    <plane-carrousel auto-validate-plane></plane-carrousel>
+</script>
+
+
+<!--ATC INFORMATION-->
+<script type="text/html" id="ATCOptionsTemplate"  auto-inside  default-child-button="#AircraftATCOptions_Content .WM_ATCOPTIONS_TAIL_NUMBER">
+    <div id="AircraftATCOptions_Content" class="scrollbar">
+        <options-menu-editable-string class="WM_ATCOPTIONS_TAIL_NUMBER opaque-placeholder noUppercase" placeholder="" maxlength="6" title="TT:MENU.AIRCRAFT.TAIL_NUMBER" force-uppercase regexp="[0-9a-zA-Z-]*" filter-profanity></options-menu-editable-string>
+        <options-menu-editable-string disabled class="WM_ATCOPTIONS_CALL_SIGN opaque-placeholder noUppercase" placeholder="" maxlength="12" force-uppercase regexp="[0-9a-zA-Z-]*" filter-profanity title="TT:MENU.AIRCRAFT.CALLSIGN"></options-menu-editable-string>
+        <options-menu-editable-string disabled class="WM_ATCOPTIONS_FLIGHT_NUMBER opaque-placeholder noUppercase" placeholder="" maxlength="4" title="TT:MENU.AIRCRAFT.FLIGHT_NUMBER" force-uppercase regexp="[0-9a-zA-Z-]*" filter-profanity></options-menu-editable-string>
+        <new-list-button class="WM_ATCOPTIONS_HEAVY_CALL noUppercase" title="TT:MENU.AIRCRAFT.APPEND_HEAVY" choices="TT:MENU.OFF,TT:MENU.ON"></new-list-button>
+        <new-list-button disabled class="WM_ATCOPTIONS_SHOW_TAIL_NUMBER noUppercase" title="TT:MENU.AIRCRAFT.SHOW_TAIL_NUMBER" choices="TT:MENU.OFF,TT:MENU.ON"></new-list-button>
+    </div>
+    <div class="TipsWrapper hide">
+        <div class="Tips"></div>
+    </div>
+</script>
+
+<!--TCas Mod INFORMATION-->
+<script type="text/html" id="TCasOptionsTemplate"  auto-inside  default-child-button="#AircraftATCOptions_Content .WM_ATCOPTIONS_TAIL_NUMBER">
+    <div id="AircraftATCOptions_Content" class="scrollbar">
+        <new-list-button class="WM_TCOPTIONS_DISPLAY_RATE noUppercase" title="DISPLAY REFRESH" choices="ULTRA, HIGH, MEDIUM, LOW, VERY LOW"></new-list-button>
+        <new-push-button class="WM_TCOPTIONS_COPY noUppercase" title="EXPORT TO CLIPBOARD"></new-push-button>
+    </div>
+    <div class="TipsWrapper hide">
+        <div class="Tips"></div>
+    </div>
+</script>
+
+<!--AIRCRAFT PANEL-->
+<script type="text/html" id="AircraftPanelsTemplate">
+
+    <options-menu id="AircraftPanels_Menu" contentId="AircraftPanels_Content" class="inline" noplaceholder  navigation-stay-inside>
+        <options-menu-item id="AircraftSelection" class="inline noIcon" title="TT:MENU.AIRCRAFT.AIRCRAFT_SELECTION" targetId="AircraftPanels_Select" data-url="/icons/OPTIONS-General_graphics.svg"></options-menu-item>
+        <options-menu-item id="AircraftLiveriesSelection" class="inline noIcon" title="TT:MENU.HANGAR_LIVERIES" targetId="AircraftPanels_Liveries" data-url="/icons/OPTIONS-General_graphics.svg"></options-menu-item>
+        <options-menu-item id="AircraftWeightBalance" class="inline noIcon" title="TT:MENU.AIRCRAFT.WEIGHT_BALANCE" targetId="AircraftPanels_WeightBalance" data-url="/icons/OPTIONS-General_graphics.svg"></options-menu-item>
+        <options-menu-item id="AircraftFailures" class="inline noIcon" title="TT:MENU.AIRCRAFT.FAILURES" targetId="AircraftPanels_Failures" data-url="/icons/OPTIONS-General_graphics.svg"></options-menu-item>
+        <options-menu-item id="ATCOptions" class="inline noIcon" title="TT:MENU.AIRCRAFT.ATC_OPTIONS" targetId="AircraftPanels_ATCOptions" data-url="/icons/OPTIONS-General_graphics.svg"></options-menu-item>
+        <options-menu-item id="TCasOptions" class="inline noIcon" title="FPS OPTIONS" targetId="AircraftPanels_TCASOptions" data-url="/icons/OPTIONS-General_graphics.svg"></options-menu-item>
+    </options-menu>
+
+    <ui-navigation-bloc id="AircraftPanels_Content" class="Content" auto-inside>
+        <aircraft-selection id="AircraftPanels_Select" elements-per-page="4"></aircraft-selection>
+        <aircraft-liveries id="AircraftPanels_Liveries" elements-per-page="4"></aircraft-liveries>
+        <fuel-payload id="AircraftPanels_WeightBalance" class="noFooter"></fuel-payload>
+        <aircraft-failures id="AircraftPanels_Failures"></aircraft-failures>
+        <aircraft-atc id="AircraftPanels_ATCOptions"></aircraft-atc>
+        <aircraft-tcas-framerate id="AircraftPanels_TCASOptions"></aircraft-tcas-framerate>
+    </ui-navigation-bloc>
+
+</script>
+
+<script type="text/javascript" src="./AircraftPanels.js"></script>
+<script type="text/javascript" src="./TCASPanels.js"></script>
