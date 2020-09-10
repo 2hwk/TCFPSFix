@@ -2,7 +2,7 @@
     "content": [
         {
             "path": "html_ui/FPS_Setting.json",
-            "size": 1494,
+            "size": 1495,
             "date": "132402817714110148"
         },
         {
@@ -17,12 +17,12 @@
         },
         {
             "path": "html_ui/Pages/FlightPlanning/Aircraft/TCasPanels.js",
-            "size": 9558,
+            "size": 9834,
             "date": "132402817714110148"
         },
         {
             "path": "html_ui/Pages/VCockpit/Instruments/Shared/BaseInstrument.js",
-            "size": 18487,
+            "size": 18486,
             "date": "132402817714110148"
         },
         {

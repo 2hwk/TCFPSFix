@@ -1,5 +1,5 @@
 {
-    "default":"Ultra",
+    "default":"High",
     "planes":[
         {"name":"A320neo ","fps":"High"},
         {"name":"747-8 Intercontinental ","fps":"Medium"},
