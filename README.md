@@ -1,3 +1,5 @@
+FPS-Fix v1.1.3a
+
 Unzip and install the FPS-Fix directory in your Community folder. DO NOT REPLACE THE BASE GAME FILES.
 
 Your community directory by default is located in C:\Users\[YOUR USERNAME]\AppData\Roaming\Microsoft Flight Simulator\Packages\Community
