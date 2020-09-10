@@ -2,7 +2,7 @@
     "default":"Ultra",
     "planes":[
         {"name":"A320neo ","fps":"High"},
-        {"name":"747-8 Intercontinental","fps":"Medium"},
+        {"name":"747-8 Intercontinental ","fps":"Medium"},
         {"name":"787-10 Dreamliner ","fps":"Medium"},
         {"name":"Cessna Citation CJ4 ","fps":"Medium"},
         {"name":"Cessna Citation Longitude ","fps":"Medium"},

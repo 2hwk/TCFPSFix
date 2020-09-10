@@ -47,7 +47,7 @@ Include.addImport("/Pages/World/PlaneSelection/PlaneSelection.html");
 Include.addImport("/templates/FuelPayload/WM_FuelPayload.html");
 Include.addImport("/Pages/World/AircraftFailures/WM_AircraftFailures.html");
 
-const TC_DEBUG = true;
+const TC_DEBUG = false;
 
 class TCasOptionsElement extends TemplateElement {
     constructor() {
@@ -96,8 +96,10 @@ class TCasOptionsElement extends TemplateElement {
                 }
                 // No aircraft found
                 if (!factor && json_obj.default) {
-                    if (TC_DEBUG) console.log(json_obj.default);
-                    factor = json_obj.default
+                    if (TC_DEBUG) console.log("Using default: "+ json_obj.default);
+                    factor = json_obj.default;
+                    localStorage.setItem("FPS_r_factor", factor);
+                    if (TC_DEBUG) console.log(localStorage.getItem("FPS_r_factor"));
                 }
 
             }
@@ -134,6 +136,7 @@ class TCasOptionsElement extends TemplateElement {
             }
             // Set rFactor -> BaseInstrument
             localStorage.setItem("FPS_r_factor", factor);
+            if (TC_DEBUG) console.log(localStorage.getItem("FPS_r_factor"));
             // Set quality for existing plane -> JSON
             let found = false;
             if (json_obj) {
