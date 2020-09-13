@@ -47,29 +47,29 @@ Include.addImport("/Pages/World/PlaneSelection/PlaneSelection.html");
 Include.addImport("/templates/FuelPayload/WM_FuelPayload.html");
 Include.addImport("/Pages/World/AircraftFailures/WM_AircraftFailures.html");
 
-const TC_DEBUG = false;
+const TC_DEBUG = true;
 
 class TCasOptionsElement extends TemplateElement {
     constructor() {
         super();
-        var json_obj = null;
-        // DEBUG
         if (TC_DEBUG && g_modDebugMgr){
             g_modDebugMgr.AddConsole(null);
         }
-        //this.json = null;
+        this.json_obj = null;
         this.current_aircraft = null;
         // Parsing JSON string into object
-        loadJSON(function(response) {
-            if (response) {
-                json_obj = JSON.parse(response);
-            }
-            if (TC_DEBUG) {
-                for (let i = 0; i < json_obj.length; i++) {
-                    console.log(json_obj[i].name + " = " + json_obj[i].fps);
+        if (this.json_obj) {
+            loadJSON(function(response) {
+                if (response) {
+                    this.json_obj = JSON.parse(response);
                 }
-            }
-        });
+                if (TC_DEBUG) {
+                    for (let i = 0; i < this.json_obj.length; i++) {
+                        console.log(this.json_obj[i].name + " = " + this.json_obj[i].fps);
+                    }
+                }
+            });
+        }
         this.onListenerRegistered = () => {
             this.m_gameFlightListener.requestGameFlight(this.onGameFlightUpdated);
         };
@@ -83,21 +83,21 @@ class TCasOptionsElement extends TemplateElement {
             let factor = null;
             this.current_aircraft = flight.aircraftData.name;
             // Fetch from JSON
-            if (json_obj) {
-                for (let i = 0; i < json_obj.planes.length; i++) {
-                    if (json_obj.planes[i].name === flight.aircraftData.name) {
+            if (this.json_obj) {
+                for (let i = 0; i < this.json_obj.planes.length; i++) {
+                    if (this.json_obj.planes[i].name === flight.aircraftData.name) {
                         if (TC_DEBUG) {
-                            console.log("FPS Quality: " + json_obj.planes[i].fps);
-                            console.log("QF: " + quality_factor[json_obj.planes[i].fps]);
+                            console.log("FPS Quality: " + this.json_obj.planes[i].fps);
+                            console.log("QF: " + quality_factor[this.json_obj.planes[i].fps]);
                         }
-                        factor = quality_factor[json_obj.planes[i].fps];
+                        factor = quality_factor[this.json_obj.planes[i].fps];
                         break;
                     }
                 }
                 // No aircraft found
-                if (!factor && json_obj.default) {
-                    if (TC_DEBUG) console.log("Using default: "+ json_obj.default);
-                    factor = quality_factor[json_obj.default];
+                if (!factor && this.json_obj.default) {
+                    if (TC_DEBUG) console.log("Using default: "+ this.json_obj.default);
+                    factor = quality_factor[this.json_obj.default];
                     localStorage.setItem("FPS_r_factor", factor);
                     if (TC_DEBUG) console.log(localStorage.getItem("FPS_r_factor"));
                 }
@@ -112,7 +112,7 @@ class TCasOptionsElement extends TemplateElement {
                 // If no factor, revert to High
                 localStorage.setItem("FPS_r_factor", "2");
                 this.fRedInd.setCurrentValue(1);
-                if (json_obj) { json_obj.default = "High"; }
+                if (this.json_obj) { this.json_obj.default = "High"; }
             }
         };
         // On menu change...
@@ -139,33 +139,33 @@ class TCasOptionsElement extends TemplateElement {
             if (TC_DEBUG) console.log(localStorage.getItem("FPS_r_factor"));
             // Set quality for existing plane -> JSON
             let found = false;
-            if (json_obj) {
-                for (let i = 0; i < json_obj.planes.length; i++) {
-                    if (!found && json_obj.planes[i].name === this.current_aircraft) {
-                        json_obj.planes[i].fps = quality;       // Set quality for this plane
+            if (this.json_obj) {
+                for (let i = 0; i < this.json_obj.planes.length; i++) {
+                    if (!found && this.json_obj.planes[i].name === this.current_aircraft) {
+                        this.json_obj.planes[i].fps = quality;       // Set quality for this plane
                         found = true;
-                        if (TC_DEBUG) { console.log("Found " + json_obj.planes[i].name); }
-                        //console.log(json_obj.planes[i].name + " = " + json_obj.planes[i].fps);
+                        if (TC_DEBUG) { console.log("Found " + this.json_obj.planes[i].name); }
+                        //console.log(this.json_obj.planes[i].name + " = " + this.json_obj.planes[i].fps);
                     }
                 }
                 // Create new plane  -> JSON
                 if (!found) {
                     if (TC_DEBUG) { console.log(">>> Creating new: " + this.current_aircraft); }
-                    var new_plane = {
+                    let new_plane = {
                         name: this.current_aircraft,
                         fps: quality
                     }
-                    if (TC_DEBUG) { "JSON: " +json_obj.planes.push(new_plane); }
+                    if (TC_DEBUG) { "JSON: " +this.json_obj.planes.push(new_plane); }
                     //console.log("Created" + new_plane.name + " = " + new_plane.fps);
                 }
-            console.log(JSON.stringify(json_obj));
+            console.log(JSON.stringify(this.json_obj));
             //console.log("FPS_r_factor set to " + factor);
             }
         };
         this.copyToClipboard = () => {
             console.log(">>>> To Clipboard");
             const element = document.createElement('textarea');
-            element.value = JSON.stringify(json_obj);
+            element.value = JSON.stringify(this.json_obj);
             element.setAttribute('readonly', '');
             element.style.position = 'absolute';
             element.style.left = '-9999px';
@@ -187,6 +187,7 @@ class TCasOptionsElement extends TemplateElement {
     ;
     connectedCallback() {
         super.connectedCallback();
+        this.json_obj = null;
         this.fRedInd = this.querySelector(".WM_TCOPTIONS_DISPLAY_RATE");
         this.fRedInd.addEventListener("OnValidate", this.onRateChange);
         this.fRedCopy = this.querySelector(".WM_TCOPTIONS_COPY");
@@ -206,7 +207,7 @@ class TCasOptionsElement extends TemplateElement {
 
 function loadJSON(callback) {
     if (TC_DEBUG) console.log("Loading JSON");
-    var xobj = new XMLHttpRequest();
+    let xobj = new XMLHttpRequest();
         xobj.overrideMimeType("application/json");
     xobj.open("GET", "/FPS_Setting.json", true);
     xobj.onreadystatechange = function () {
