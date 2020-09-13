@@ -47,7 +47,7 @@ Include.addImport("/Pages/World/PlaneSelection/PlaneSelection.html");
 Include.addImport("/templates/FuelPayload/WM_FuelPayload.html");
 Include.addImport("/Pages/World/AircraftFailures/WM_AircraftFailures.html");
 
-const TC_DEBUG = true;
+const TC_DEBUG = false;
 
 class TCasOptionsElement extends TemplateElement {
     constructor() {
