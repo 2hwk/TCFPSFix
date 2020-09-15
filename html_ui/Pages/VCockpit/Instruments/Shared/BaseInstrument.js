@@ -3,7 +3,7 @@
 // v 1.1.3a
 // --------------------------
 
-const TC_DEBUG = false;
+const TC_DEBUG = true;
 
 class BaseInstrument extends TemplateElement {
     constructor() {
