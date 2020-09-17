@@ -1,4 +1,8 @@
-FPS-Fix v 1.1.4a
+# FPS-Fix v 1.1.4a
+
+READ: Important as of V1.1.4a / Game Version v1.8.3 - Set Glass Cockpit Refresh Rate to HIGH. Setting this to MEDIUM or LOW will overwrite the mod's setting (and this is intentional). If you wish to use the mod, please set this to High. The game's inbuilt FPS reduction applies on a global setting, the mod allows you to set this value per aircraft in freeflight mode.
+
+## Install
 
 Unzip and install the FPS-Fix directory in your Community folder. DO NOT REPLACE THE BASE GAME FILES.
 
@@ -14,7 +18,7 @@ Expand the Watched Bases tab. This is your Community folder, where the mod must 
 
 -------------
 
-Usage:
+## Usage
 
 Important as of V1.1.4a / Game Version v1.8.3 - Set Glass Cockpit Refresh Rate to HIGH. Setting this to MEDIUM or LOW will overwrite the mod's setting (and this is intentional). If you wish to use the mod, please set this to High. The game's inbuilt FPS reduction applies on a global setting, the mod allows you to set this value per aircraft in freeflight mode.
 
@@ -87,3 +91,13 @@ Cessna 152 Aerobat - Ultra
 Cessna 172 Skyhawk - Ultra
 
 Savage Cub - Ultra
+
+----
+
+## License/Credit
+
+See License.MD.
+
+Credit to Asobo Studio and Microsoft for the base game files.
+
+See Credits page on [Nexusmod page](https://www.nexusmods.com/microsoftflightsimulator/mods/34) for full credits.
