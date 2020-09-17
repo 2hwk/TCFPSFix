@@ -1,31 +1,32 @@
 // --------------------------
 // BaseInstrument
-// v 1.1.3a
+// v 1.1.4a
 // --------------------------
 
 const TC_DEBUG = false;
+
 class BaseInstrument extends TemplateElement {
     constructor() {
         super();
         this.urlConfig = new URLConfig();
         this.xmlConfigLoading = false;
-        this._deltaTime = 0;
         this.frameCount = 0;
         this._lastTime = 0;
         this._isConnected = false;
         this._isInitialized = false;
         this._quality = Quality.high;
         this._gameState = GameState.ingame;
+        this._deltaTime = 0;
+        this._alwaysUpdate = false;
         this.highlightList = [];
         this.backgroundList = [];
-        this.dataMetaManager = new DataReadMetaManager();
-        //  ---------------------------  MOD  ------------------------------------------  //
+        this.pendingCalls = [];
         this._refresh = Refresh.ultra;          // Refresh at FPS by default
         this.frameReduce = 1;                   // Default reduction factor
-        //  ---------------------------  MOD  ------------------------------------------  //
+        this.dataMetaManager = new DataReadMetaManager();
     }
     get initialized() { return this._isInitialized; }
-    get instrumentIdentifier() {return this._instrumentId;}
+    get instrumentIdentifier() { return this._instrumentId; }
     get instrumentIndex() { return (this.urlConfig.index != null) ? this.urlConfig.index : 1; }
     get isInteractive() { return false; }
     get IsGlassCockpit() { return false; }
@@ -33,11 +34,11 @@ class BaseInstrument extends TemplateElement {
     get deltaTime() { return this._deltaTime; }
     connectedCallback() {
         super.connectedCallback();
-        //  ---------------------------  DEBUG  ------------------------------------------  //
-        if (TC_DEBUG && g_modDebugMgr) {
-            g_modDebugMgr.AddConsole(null);
+        if (TC_DEBUG && g_modDebugMgr){
+            Include.addScript("/JS/debug.js", function () {
+                g_modDebugMgr.AddConsole(null);
+            });
         }
-        //  ---------------------------  DEBUG  ------------------------------------------  //
         this.electricity = this.getChildById("Electricity");
         this.highlightSvg = this.getChildById("highlight");
         this.loadDocumentAttributes();
@@ -45,7 +46,9 @@ class BaseInstrument extends TemplateElement {
         this.loadXMLConfig();
         window.document.addEventListener("OnVCockpitPanelAttributesChanged", this.loadDocumentAttributes.bind(this));
         this.startTime = Date.now();
-        this.createMainLoop();
+        if (this.getGameState() != GameState.mainmenu) {
+            this.createMainLoop();
+        }
         //  ---------------------------  MOD  ------------------------------------------  //
         this.frameReduce = this.loadFrameRed();
         // DEBUG
@@ -174,6 +177,9 @@ class BaseInstrument extends TemplateElement {
     onSoundEnd(_event) {
     }
     getQuality() {
+        if (this._alwaysUpdate && this._quality != Quality.disabled) {
+            return Quality.high;
+        }
         return this._quality;
     }
     getGameState() {
@@ -193,11 +199,17 @@ class BaseInstrument extends TemplateElement {
         this._quality = _quality;
     }
     onGameStateChanged(_oldState, _newState) {
-        if (_oldState == GameState.loading && (_newState == GameState.ingame || _newState == GameState.briefing)) {
-            this.reboot();
+        if (_newState != GameState.mainmenu) {
+            this.createMainLoop();
+            if (_oldState == GameState.loading && (_newState == GameState.ingame || _newState == GameState.briefing)) {
+                this.reboot();
+            }
+            else if (_oldState == GameState.briefing && _newState == GameState.ingame) {
+                this.onFlightStart();
+            }
         }
-        else if (_oldState == GameState.briefing && _newState == GameState.ingame) {
-            this.onFlightStart();
+        else {
+            this.killMainLoop();
         }
         this._gameState = _newState;
     }
@@ -230,6 +242,12 @@ class BaseInstrument extends TemplateElement {
             if (electric.length > 0) {
                 this.electricalLogic = new CompositeLogicXMLElement(this, electric[0]);
             }
+            let alwaysUpdate = this.instrumentXmlConfig.getElementsByTagName("AlwaysUpdate");
+            if (alwaysUpdate.length > 0) {
+                if (alwaysUpdate[0].textContent.toLowerCase() == "true") {
+                    this._alwaysUpdate = true;
+                }
+            }
         }
     }
     parseURLAttributes() {
@@ -240,10 +258,24 @@ class BaseInstrument extends TemplateElement {
         if (this.urlConfig.style)
             this.setAttribute("instrumentstyle", this.urlConfig.style);
     }
+    requestCall(_func) {
+        this.pendingCalls.push(_func);
+    }
     beforeUpdate() {
-        var curTime = Date.now();
-        this._deltaTime = curTime - this._lastTime;
-        this._lastTime = curTime;
+        {
+            var curTime = Date.now();
+            this._deltaTime = curTime - this._lastTime;
+            this._lastTime = curTime;
+        }
+        {
+            let length = this.pendingCalls.length;
+            if (length > 10)
+                console.warn("Many pending calls this frame (" + length + ")");
+            for (let i = 0; i < length; i++) {
+                this.pendingCalls[i]();
+            }
+            this.pendingCalls.splice(0, length);
+        }
     }
     Update() {
         this.dataMetaManager.UpdateAll();
@@ -252,19 +284,25 @@ class BaseInstrument extends TemplateElement {
     afterUpdate() {
         this.frameCount++;
     }
-    //  ---------------------------  MOD  ------------------------------------------  //
+    // ------------------------------------ MOD -------------------------------------------
     CanUpdate() {
         let frame_red = this.getFrameRed();
         let quality = this.getQuality();
 
-        if (quality == Quality.high) {
+        if (quality == Quality.ultra) {
             if ((this.frameCount % frame_red) != 0) {
                 //console.log("Delta time updated - passed canupdate() " + this._deltaTime);
                 return false;
             }
+            return true;
+        }
+        else if (quality == Quality.high) {
+            if ((this.frameCount % 2) != 0) {
+                return false;
+            }
         }
         else if (quality == Quality.medium) {
-            if ((this.frameCount % 8) != 0) {
+            if ((this.frameCount % 4) != 0) {
                 return false;
             }
         }
@@ -283,7 +321,7 @@ class BaseInstrument extends TemplateElement {
         }
         return true;
     }
-    //  ---------------------------  MOD  ------------------------------------------  //
+    // ------------------------------------ MOD -------------------------------------------
     updateElectricity() {
         let powerOn = this.isElectricityAvailable();
         if (this.electricity) {
@@ -308,10 +346,12 @@ class BaseInstrument extends TemplateElement {
         return false;
     }
     createMainLoop() {
+        if (this._isConnected)
+            return;
         this._lastTime = Date.now();
         let updateLoop = () => {
             if (!this._isConnected) {
-                console.warn("Not connected. Exiting...");
+                console.log("Exiting MainLoop...");
                 return;
             }
             try {
@@ -319,7 +359,8 @@ class BaseInstrument extends TemplateElement {
                     if (!this._isInitialized)
                         this.Init();
                     this.beforeUpdate();
-                    this.Update();
+                    if (this.CanUpdate())
+                        this.Update();
                     this.afterUpdate();
                 }
             }
@@ -329,7 +370,11 @@ class BaseInstrument extends TemplateElement {
             requestAnimationFrame(updateLoop);
         };
         this._isConnected = true;
+        console.log("MainLoop created");
         requestAnimationFrame(updateLoop);
+    }
+    killMainLoop() {
+        this._isConnected = false;
     }
     loadXMLConfig() {
         var xmlPath;
@@ -411,9 +456,7 @@ class BaseInstrument extends TemplateElement {
             }
         }
     }
-
-    //  ---------------------------  MOD  ------------------------------------------  //
-
+    // ------------------------------------ MOD -------------------------------------------
     loadFrameRed() {
         let f_name = "FPS_r_factor";
         let def_factor = 2;
@@ -437,22 +480,19 @@ class BaseInstrument extends TemplateElement {
     getRefresh() {
         return this._refresh;
     }
-    // Make all instruments touchscreen
-    //get isInteractive() { return true; }
-
-    //  ---------------------------  MOD  ------------------------------------------  //
-
+    // ------------------------------------ MOD -------------------------------------------
 }
 BaseInstrument.allInstrumentsLoaded = false;
 class URLConfig {
 }
 var Quality;
 (function (Quality) {
-    Quality[Quality["high"] = 0] = "high";
-    Quality[Quality["medium"] = 1] = "medium";
-    Quality[Quality["low"] = 2] = "low";
-    Quality[Quality["hidden"] = 3] = "hidden";
-    Quality[Quality["disabled"] = 4] = "disabled";
+    Quality[Quality["ultra"] = 0] = "ultra";
+    Quality[Quality["high"] = 1] = "high";
+    Quality[Quality["medium"] = 2] = "medium";
+    Quality[Quality["low"] = 3] = "low";
+    Quality[Quality["hidden"] = 4] = "hidden";
+    Quality[Quality["disabled"] = 5] = "disabled";
 })(Quality || (Quality = {}));
 var GameState;
 (function (GameState) {
@@ -461,10 +501,8 @@ var GameState;
     GameState[GameState["briefing"] = 2] = "briefing";
     GameState[GameState["ingame"] = 3] = "ingame";
 })(GameState || (GameState = {}));
-class HighlightedElement {
-}
 
-//  ---------------------------  MOD  ------------------------------------------  //
+// ----------------------------- MOD ------------------------------------
 var Refresh;
 (function (Refresh) {
 Refresh[Refresh["ultra"] = 0] = "ultra";
@@ -474,9 +512,11 @@ Refresh[Refresh["low"] = 3] = "low";
 Refresh[Refresh["hidden"] = 4] = "hidden";
 Refresh[Refresh["disable"] = 5] = "disable";
 })(Refresh || (Refresh = {}));
-//  ---------------------------  MOD  ------------------------------------------  //
+// ----------------------------- MOD ------------------------------------
 
 
+class HighlightedElement {
+}
 customElements.define("base-instrument", BaseInstrument);
 checkAutoload();
 //# sourceMappingURL=BaseInstrument.js.map

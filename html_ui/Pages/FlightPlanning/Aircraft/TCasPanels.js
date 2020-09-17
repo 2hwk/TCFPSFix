@@ -53,7 +53,9 @@ class TCasOptionsElement extends TemplateElement {
     constructor() {
         super();
         if (TC_DEBUG && g_modDebugMgr){
-            g_modDebugMgr.AddConsole(null);
+            Include.addScript("/JS/debug.js", function () {
+                g_modDebugMgr.AddConsole(null);
+            });
         }
         var json_obj = null;
         this.current_aircraft = null;
