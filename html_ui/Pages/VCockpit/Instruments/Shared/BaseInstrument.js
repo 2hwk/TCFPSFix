@@ -1,16 +1,19 @@
 // --------------------------
 // BaseInstrument
-// v 1.1.4a
+// v 1.1.4.1a
 // --------------------------
 
 const TC_DEBUG = false;
 
 class BaseInstrument extends TemplateElement {
+
     constructor() {
         super();
         this.urlConfig = new URLConfig();
         this.xmlConfigLoading = false;
         this.frameCount = 0;
+        this.highlightList = [];
+        this.backgroundList = [];
         this._lastTime = 0;
         this._isConnected = false;
         this._isInitialized = false;
@@ -18,11 +21,11 @@ class BaseInstrument extends TemplateElement {
         this._gameState = GameState.ingame;
         this._deltaTime = 0;
         this._alwaysUpdate = false;
-        this.highlightList = [];
-        this.backgroundList = [];
-        this.pendingCalls = [];
+        this._pendingCalls = [];
+        //  ---------------------------  MOD  ------------------------------------------  //
         this._refresh = Refresh.ultra;          // Refresh at FPS by default
         this.frameReduce = 1;                   // Default reduction factor
+        //  ---------------------------  MOD  ------------------------------------------  //
         this.dataMetaManager = new DataReadMetaManager();
     }
     get initialized() { return this._isInitialized; }
@@ -32,6 +35,11 @@ class BaseInstrument extends TemplateElement {
     get IsGlassCockpit() { return false; }
     get isPrimary() { return (this.urlConfig.index == null || this.urlConfig.index == 1); }
     get deltaTime() { return this._deltaTime; }
+    get facilityLoader() {
+        if (!this._facilityLoader)
+            this._facilityLoader = new FacilityLoader(this);
+        return this._facilityLoader;
+    }
     connectedCallback() {
         super.connectedCallback();
         if (TC_DEBUG && g_modDebugMgr){
@@ -258,34 +266,29 @@ class BaseInstrument extends TemplateElement {
         if (this.urlConfig.style)
             this.setAttribute("instrumentstyle", this.urlConfig.style);
     }
-    requestCall(_func) {
-        this.pendingCalls.push(_func);
-    }
     beforeUpdate() {
-        {
-            var curTime = Date.now();
-            this._deltaTime = curTime - this._lastTime;
-            this._lastTime = curTime;
-        }
-        {
-            let length = this.pendingCalls.length;
-            if (length > 10)
-                console.warn("Many pending calls this frame (" + length + ")");
-            for (let i = 0; i < length; i++) {
-                this.pendingCalls[i]();
-            }
-            this.pendingCalls.splice(0, length);
-        }
+        var curTime = Date.now();
+        this._deltaTime = curTime - this._lastTime;
+        this._lastTime = curTime;
+        this.updatePendingCalls();
     }
     Update() {
         this.dataMetaManager.UpdateAll();
         this.updateHighlight();
+        if (this._facilityLoader) {
+            this._facilityLoader.update();
+        }
     }
     afterUpdate() {
         this.frameCount++;
     }
-    // ------------------------------------ MOD -------------------------------------------
-    CanUpdate() {
+    doUpdate() {
+        this.beforeUpdate();
+        this.Update();
+        this.afterUpdate();
+    }
+   // ------------------------------------ MOD -------------------------------------------
+   CanUpdate() {
         let frame_red = this.getFrameRed();
         let quality = this.getQuality();
 
@@ -387,9 +390,9 @@ class BaseInstrument extends TemplateElement {
         if (xmlPath) {
             this.xmlConfigLoading = true;
             var xmlRequest = new XMLHttpRequest();
-            xmlRequest.onreadystatechange = function (_NavSystem) {
+            xmlRequest.onreadystatechange = function (_instrument) {
                 if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
-                    _NavSystem.onXMLConfigLoaded(this);
+                    _instrument.onXMLConfigLoaded(this);
                 }
             }.bind(xmlRequest, this);
             xmlRequest.open("GET", xmlPath, true);
@@ -456,6 +459,17 @@ class BaseInstrument extends TemplateElement {
             }
         }
     }
+    requestCall(_func) {
+        this._pendingCalls.push(_func);
+    }
+    updatePendingCalls() {
+        let length = this._pendingCalls.length;
+        for (let i = 0; i < length; i++) {
+            this._pendingCalls[i]();
+        }
+        this._pendingCalls.splice(0, length);
+    }
+
     // ------------------------------------ MOD -------------------------------------------
     loadFrameRed() {
         let f_name = "FPS_r_factor";
@@ -483,6 +497,7 @@ class BaseInstrument extends TemplateElement {
     // ------------------------------------ MOD -------------------------------------------
 }
 BaseInstrument.allInstrumentsLoaded = false;
+BaseInstrument.useSvgImages = false;
 class URLConfig {
 }
 var Quality;
@@ -513,8 +528,6 @@ Refresh[Refresh["hidden"] = 4] = "hidden";
 Refresh[Refresh["disable"] = 5] = "disable";
 })(Refresh || (Refresh = {}));
 // ----------------------------- MOD ------------------------------------
-
-
 class HighlightedElement {
 }
 customElements.define("base-instrument", BaseInstrument);
